@@ -41,14 +41,14 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
 
     private static final String ARG_TYPE = "type";
 
-    boolean plain = false;
+    boolean expanded;
+    boolean plain;
     String response = "";
 
     TextView headers;
     JsonViewLayout body;
     TextView plainBody;
-    Button expandBtn;
-    Button collapseBtn;
+    Button expandCollapseBtn;
     Button plainHighlightedToggle;
 
     private int type;
@@ -79,9 +79,10 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
         headers = view.findViewById(R.id.headers);
         body = view.findViewById(R.id.body);
         plainBody = view.findViewById(R.id.plain_body);
-        expandBtn = view.findViewById(R.id.expandBtn);
-        collapseBtn = view.findViewById(R.id.collapseBtn);
+        expandCollapseBtn = view.findViewById(R.id.expandCollapseBtn);
         plainHighlightedToggle = view.findViewById(R.id.plainHighlightedToggle);
+        expanded = true;
+        plain = true;
         return view;
     }
 
@@ -89,43 +90,38 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         populateUI();
-        expandBtn.setOnClickListener(new View.OnClickListener() {
+        expandCollapseBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                expand();
-            }
-        });
-        collapseBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                collapse();
+                expanded = !expanded;
+                resetExpandCollapseState();
             }
         });
         plainHighlightedToggle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                togglePlainHighlighted();
+                plain = !plain;
+                setPlainOrHighlightText();
             }
         });
     }
 
-    private void expand() {
-        expandBtn.setEnabled(false);
-        body.expandAll();
-        expandBtn.setEnabled(true);
-    }
-
-    private void collapse() {
-        collapseBtn.setEnabled(false);
-        body.collapseAll();
-        collapseBtn.setEnabled(true);
-    }
-
-    private void togglePlainHighlighted() {
-        if (plain) {
-            bindJson(response);
+    private void resetExpandCollapseState() {
+        if (expanded) {
+            body.expandAll();
+            expandCollapseBtn.setText(R.string.collapse);
         } else {
+            body.collapseAll();
+            expandCollapseBtn.setText(R.string.expand);
+        }
+    }
+
+    private void setPlainOrHighlightText() {
+        if (plain) {
             bindText(response);
+        } else {
+            bindJson(response);
+            resetExpandCollapseState();
         }
     }
 
@@ -157,9 +153,9 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
         if (!isPlainText) {
             bindText(getString(R.string.chuck_body_omitted));
         } else if (bodyString != null && isJson(bodyString)) {
-            bindJson(bodyString);
             body.bindJson(bodyString);
             body.setTextSize(13);
+            setPlainOrHighlightText();
         } else {
             bindText(bodyString);
         }
@@ -171,8 +167,7 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
         body.setVisibility(View.VISIBLE);
         plain = false;
         plainHighlightedToggle.setText(R.string.plain);
-        expandBtn.setVisibility(View.VISIBLE);
-        collapseBtn.setVisibility(View.VISIBLE);
+        expandCollapseBtn.setVisibility(View.VISIBLE);
     }
 
     private void bindText(String bodyString) {
@@ -187,9 +182,7 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
         body.setVisibility(View.GONE);
         plain = true;
         plainHighlightedToggle.setText(R.string.highlighted);
-
-        expandBtn.setVisibility(View.GONE);
-        collapseBtn.setVisibility(View.GONE);
+        expandCollapseBtn.setVisibility(View.GONE);
     }
 
     private boolean isJson(String body) {

@@ -41,19 +41,16 @@
                 android:id="@+id/plainHighlightedToggle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/highlighted" />
+                android:text="@string/highlighted"
+                android:textAllCaps="false" />
 
             <Button
-                android:id="@+id/collapseBtn"
+                android:id="@+id/expandCollapseBtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/collapse" />
+                android:text="@string/collapse"
+                android:textAllCaps="false" />
 
-            <Button
-                android:id="@+id/expandBtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/expand" />
         </LinearLayout>
 
         <com.dandan.jsonhandleview.library.JsonViewLayout
