@@ -153,9 +153,13 @@ public class TransactionPayloadFragment extends Fragment implements TransactionF
         if (!isPlainText) {
             bindText(getString(R.string.chuck_body_omitted));
         } else if (bodyString != null && isJson(bodyString)) {
-            body.bindJson(bodyString);
-            body.setTextSize(13);
-            setPlainOrHighlightText();
+            try {
+                body.bindJson(bodyString);
+                body.setTextSize(13);
+                setPlainOrHighlightText();
+            } catch (IllegalArgumentException e) {
+                // noop
+            }
         } else {
             bindText(bodyString);
         }
